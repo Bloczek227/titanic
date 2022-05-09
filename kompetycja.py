@@ -47,8 +47,14 @@ kfold = StratifiedKFold(n_splits=10)
 pipe = Pipeline([('preprocessing', StandardScaler()), ('classifier', SVC())])
 param_grid = {
             'classifier__gamma': uniform(0.01,1),
-            'classifier__C': uniform(0.1,10)
+            'classifier__C': uniform(0.01,10)
 }
 grid_1 = RandomizedSearchCV(pipe, param_grid, cv=kfold, return_train_score=True,random_state=0)
 grid_1.fit(X_train, y_train)
 print(grid_1.best_params_)
+
+predictions=grid_1.predict(test_data)
+res = pd.DataFrame(predictions)
+res.index = test_data.index+892
+res.columns = ['PassengerId,Survived']
+res.to_csv("submission.csv")
